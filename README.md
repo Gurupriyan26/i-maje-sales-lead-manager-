@@ -6,6 +6,7 @@ A modern, high-velocity Sales Lead Management web application built for the **Vi
 
 ## 🌟 Executive Summary & Highlights
 - **Zero-Config Execution**: Works directly by opening `index.html` in any modern web browser without dependencies or build setups.
+- **🔔 Follow-Up Alert System & Notification Hub**: Real-time notification bell with animated ringing indicator, unread badge count, dedicated Alert Center dropdown categorized by **Overdue**, **Due Today**, and **Upcoming**, with 1-click snooze actions (+1 Day, +3 Days) and quick email/call launchers.
 - **Dual Visual Workflows**: Interactive **Kanban Pipeline Board** with HTML5 drag-and-drop + Sortable **Data Table View**.
 - **Real-Time KPI Dashboard**: Live tracking of Total Leads, Converted Leads (with conversion %), Pending Leads, Urgent Overdue actions, and Average AI Score.
 - **🤖 Embedded Lead AI Subsystem**: Rule-based AI lead scoring (0-100), automated deal health verdict, AI next-best action recommendations, and one-click personalized email pitch drafter.

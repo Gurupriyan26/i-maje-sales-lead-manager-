@@ -466,6 +466,10 @@ html, body {
   gap: 16px;
 }
 
+.kpi-grid.kpi-grid-6 {
+  grid-template-columns: repeat(6, 1fr);
+}
+
 .kpi-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -476,6 +480,18 @@ html, body {
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(8px);
   transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.kpi-card.clickable-kpi {
+  cursor: pointer;
+}
+.kpi-card.clickable-kpi:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: var(--shadow-md);
+}
+.kpi-card.clickable-kpi.active-kpi-filter {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px var(--primary-glow);
 }
 
 .kpi-card:hover {
@@ -514,6 +530,7 @@ html, body {
 .card-converted .kpi-icon-pill { background: var(--success-bg); color: var(--success); }
 .card-pending .kpi-icon-pill { background: var(--warning-bg); color: var(--warning); }
 .card-urgent .kpi-icon-pill { background: var(--danger-bg); color: var(--danger); }
+.card-due-today .kpi-icon-pill { background: rgba(245, 158, 11, 0.18); color: #f59e0b; }
 .card-ai-score .kpi-icon-pill { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
 
 .kpi-body {
@@ -537,6 +554,97 @@ html, body {
   font-weight: 600;
 }
 .kpi-trend.positive { color: var(--success); }
+.progress-today { background: var(--warning); }
+
+/* Quick Follow-up Filter Chips Bar */
+.followup-quick-chips-bar {
+  padding: 0 28px 12px 28px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.chips-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.quick-chip-btn {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast);
+}
+
+.quick-chip-btn:hover {
+  border-color: var(--border-color-hover);
+  color: var(--text-main);
+  background: var(--bg-surface-elevated);
+}
+
+.quick-chip-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.quick-chip-btn.chip-overdue.active, .quick-chip-btn.chip-overdue:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+.quick-chip-btn.chip-overdue.active {
+  background: var(--danger);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--danger-glow);
+}
+
+.quick-chip-btn.chip-today.active, .quick-chip-btn.chip-today:hover {
+  border-color: var(--warning);
+  color: var(--warning);
+}
+.quick-chip-btn.chip-today.active {
+  background: var(--warning);
+  color: #000;
+  box-shadow: 0 2px 8px var(--warning-glow);
+}
+
+/* Visual Highlights on Cards and Table Rows for Overdue Leads */
+.kanban-card.card-overdue-highlight {
+  border: 1.5px solid rgba(239, 68, 68, 0.6) !important;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.25) !important;
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.08) 0%, var(--bg-card) 40%);
+}
+
+.kanban-card.card-today-highlight {
+  border: 1.5px solid rgba(245, 158, 11, 0.6) !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.2) !important;
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, var(--bg-card) 40%);
+}
+
+.leads-table tbody tr.table-row-overdue {
+  background: rgba(239, 68, 68, 0.06);
+  border-left: 3px solid var(--danger);
+}
+
+.leads-table tbody tr.table-row-today {
+  background: rgba(245, 158, 11, 0.05);
+  border-left: 3px solid var(--warning);
+}
+
 .kpi-subtext {
   font-size: 0.8rem;
   font-weight: 600;
@@ -1972,3 +2080,564 @@ html, body {
     padding: 8px 16px;
   }
 }
+
+/* ==========================================================================
+   FOLLOW-UP ALERT SYSTEM & NOTIFICATION CENTER
+   ========================================================================== */
+.alerts-dropdown-wrapper {
+  position: relative;
+}
+
+.btn-alert-bell {
+  position: relative;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  transition: all var(--transition-normal);
+}
+
+.btn-alert-bell.has-urgent-alerts {
+  border-color: rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--danger);
+}
+
+.btn-alert-bell.has-urgent-alerts #alertBellIcon {
+  animation: ringWobble 2.5s infinite ease-in-out;
+  transform-origin: top center;
+}
+
+@keyframes ringWobble {
+  0%, 100% { transform: rotate(0); }
+  5%, 15% { transform: rotate(16deg); }
+  10%, 20% { transform: rotate(-16deg); }
+  25% { transform: rotate(8deg); }
+  30% { transform: rotate(-8deg); }
+  35% { transform: rotate(0); }
+}
+
+.alert-badge-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: linear-gradient(135deg, #ef4444, #f43f5e);
+  color: #ffffff;
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+  border: 2px solid var(--bg-surface);
+}
+
+/* Alerts Dropdown Panel */
+.alerts-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 380px;
+  max-width: 90vw;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  display: none;
+  flex-direction: column;
+  z-index: 1000;
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+  animation: dropdownIn 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.alerts-panel.show {
+  display: flex;
+}
+
+.alerts-panel-header {
+  padding: 14px 18px;
+  background: var(--bg-surface-elevated);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.alerts-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.alerts-badge-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  background: var(--danger-bg);
+  color: var(--danger);
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.alerts-tabs {
+  display: flex;
+  padding: 8px 12px 0 12px;
+  background: var(--bg-surface-elevated);
+  border-bottom: 1px solid var(--border-color);
+  gap: 4px;
+}
+
+.alert-tab-btn {
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all var(--transition-fast);
+}
+
+.alert-tab-btn:hover {
+  color: var(--text-main);
+}
+
+.alert-tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 700;
+}
+
+.tab-count {
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  background: var(--bg-card);
+  border-radius: 8px;
+}
+
+.alerts-list-container {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.alert-item-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: all var(--transition-fast);
+}
+
+.alert-item-card:hover {
+  border-color: var(--border-color-hover);
+  background: var(--bg-card-hover);
+}
+
+.alert-item-card.overdue {
+  border-left: 3px solid var(--danger);
+  background: rgba(239, 68, 68, 0.04);
+}
+
+.alert-item-card.today {
+  border-left: 3px solid var(--warning);
+  background: rgba(245, 158, 11, 0.04);
+}
+
+.alert-item-card.upcoming {
+  border-left: 3px solid var(--info);
+}
+
+.alert-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.alert-lead-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--text-main);
+  cursor: pointer;
+}
+.alert-lead-name:hover { color: var(--primary); text-decoration: underline; }
+
+.alert-time-tag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+.alert-time-tag.overdue { background: var(--danger-bg); color: var(--danger); }
+.alert-time-tag.today { background: var(--warning-bg); color: var(--warning); }
+.alert-time-tag.upcoming { background: var(--info-bg); color: var(--info); }
+
+.alert-company-line {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.alert-rep-tag {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.alert-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-color);
+  padding-top: 6px;
+  margin-top: 2px;
+}
+
+.alert-quick-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-alert-action {
+  font-size: 0.72rem;
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all var(--transition-fast);
+}
+.btn-alert-action:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.alerts-panel-footer {
+  padding: 10px 16px;
+  background: var(--bg-surface-elevated);
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.btn-link-sm {
+  background: transparent;
+  border: none;
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-link-sm:hover { text-decoration: underline; }
+
+/* Follow-up Urgency Banner */
+.followup-alert-banner {
+  margin: 12px 28px 0 28px;
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.15), rgba(245, 158, 11, 0.12));
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  animation: slideDown 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.banner-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.banner-icon-pulse {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--danger-bg);
+  color: var(--danger);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  animation: pulseGlow 1.8s infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+}
+
+.banner-text strong {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--danger);
+}
+
+.banner-text span {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.banner-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.banner-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+.banner-close-btn:hover { color: var(--text-main); }
+
+.alert-filter-highlight {
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+/* ==========================================================================
+   FOLLOW-UP VISUAL HIGHLIGHTS: Kanban Cards
+   ========================================================================== */
+
+/* Overdue kanban card - pulsing red border with glow */
+.kanban-card.card-overdue-highlight {
+  border: 1.5px solid var(--danger) !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.08), var(--bg-card)) !important;
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4), var(--shadow-sm);
+  animation: overdueCardPulse 2s ease-in-out infinite;
+  position: relative;
+}
+
+.kanban-card.card-overdue-highlight::before {
+  content: '🚨 OVERDUE';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 0 var(--radius-md) 0 var(--radius-sm);
+  letter-spacing: 0.06em;
+  z-index: 2;
+}
+
+@keyframes overdueCardPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.35), var(--shadow-sm); }
+  50%       { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0), var(--shadow-md); }
+}
+
+/* Due Today kanban card - amber glow */
+.kanban-card.card-today-highlight {
+  border: 1.5px solid var(--warning) !important;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), var(--bg-card)) !important;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.2), var(--shadow-sm);
+  position: relative;
+}
+
+.kanban-card.card-today-highlight::before {
+  content: '⏰ DUE TODAY';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  background: var(--warning);
+  color: #0f172a;
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 0 var(--radius-md) 0 var(--radius-sm);
+  letter-spacing: 0.06em;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   FOLLOW-UP VISUAL HIGHLIGHTS: Table Rows
+   ========================================================================== */
+
+/* Overdue table row */
+.leads-table tbody tr.table-row-overdue {
+  background: rgba(239, 68, 68, 0.06) !important;
+  border-left: 3px solid var(--danger);
+  position: relative;
+}
+
+.leads-table tbody tr.table-row-overdue:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Due Today table row */
+.leads-table tbody tr.table-row-today {
+  background: rgba(245, 158, 11, 0.06) !important;
+  border-left: 3px solid var(--warning);
+}
+
+.leads-table tbody tr.table-row-today:hover {
+  background: rgba(245, 158, 11, 0.1) !important;
+}
+
+/* Inline urgency label in table follow-up date cell */
+.followup-urgent-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 10px;
+  margin-top: 3px;
+  letter-spacing: 0.03em;
+}
+
+.followup-urgent-label.overdue-label {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  animation: overdueCardPulse 2s ease-in-out infinite;
+}
+
+.followup-urgent-label.today-label {
+  background: var(--warning-bg);
+  color: var(--warning);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* ==========================================================================
+   KPI CARDS: Active filter state highlight
+   ========================================================================== */
+.clickable-kpi {
+  cursor: pointer;
+  transition: all var(--transition-normal) !important;
+}
+
+.clickable-kpi:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.clickable-kpi.active-kpi-filter {
+  ring: 2px solid var(--primary);
+  box-shadow: 0 0 0 2px var(--primary), var(--shadow-md) !important;
+}
+
+/* ==========================================================================
+   FOLLOW-UP SECTION DIVIDER in Kanban (Overdue / Today grouping)
+   ========================================================================== */
+.followup-section-divider {
+  margin: 6px 4px 4px;
+  padding: 4px 8px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.followup-section-divider.overdue-divider {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--danger);
+  border-left: 3px solid var(--danger);
+}
+
+.followup-section-divider.today-divider {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--warning);
+  border-left: 3px solid var(--warning);
+}
+
+.followup-section-divider.normal-divider {
+  background: var(--bg-surface-elevated);
+  color: var(--text-dim);
+  border-left: 3px solid var(--border-color);
+}
+
+/* Bell ring animation for urgent alerts */
+@keyframes bellRing {
+  0%, 100% { transform: rotate(0deg); }
+  10%       { transform: rotate(14deg); }
+  20%       { transform: rotate(-12deg); }
+  30%       { transform: rotate(10deg); }
+  40%       { transform: rotate(-8deg); }
+  50%       { transform: rotate(5deg); }
+  60%       { transform: rotate(0deg); }
+}
+
+.btn-alert-bell.has-urgent-alerts #alertBellIcon {
+  animation: bellRing 1.8s ease-in-out infinite;
+  color: var(--danger);
+}
+
+/* Alert badge count pulse */
+.alert-badge-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 18px;
+  height: 18px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  animation: badgePop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes badgePop {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Overdue section header in alert panel */
+.alert-section-header {
+  padding: 6px 12px 2px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.alert-section-header.overdue-header { color: var(--danger); }
+.alert-section-header.today-header   { color: var(--warning); }
+.alert-section-header.upcoming-header{ color: var(--info); }

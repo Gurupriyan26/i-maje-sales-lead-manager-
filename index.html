@@ -37,6 +37,40 @@
       </div>
 
       <div class="navbar-right">
+        <!-- Follow-Up Notification Alert Center -->
+        <div class="alerts-dropdown-wrapper">
+          <button id="alertBellBtn" class="btn-icon btn-alert-bell" title="Follow-up Alerts" aria-label="Follow-up Alerts">
+            <i class="fa-solid fa-bell" id="alertBellIcon"></i>
+            <span class="alert-badge-count" id="alertBadgeCount" style="display:none;">0</span>
+          </button>
+          
+          <!-- Alerts Dropdown Panel -->
+          <div class="alerts-panel" id="alertsPanel">
+            <div class="alerts-panel-header">
+              <div class="alerts-title-row">
+                <i class="fa-solid fa-bell-ring text-warning"></i>
+                <h4>Follow-Up Alert Center</h4>
+              </div>
+              <span class="alerts-badge-pill" id="alertsTotalSummary">0 Action Required</span>
+            </div>
+
+            <div class="alerts-tabs">
+              <button class="alert-tab-btn active" data-tab="all">All Alerts</button>
+              <button class="alert-tab-btn" data-tab="overdue">Overdue <span class="tab-count" id="tabCountOverdue">0</span></button>
+              <button class="alert-tab-btn" data-tab="today">Today <span class="tab-count" id="tabCountToday">0</span></button>
+              <button class="alert-tab-btn" data-tab="upcoming">Upcoming <span class="tab-count" id="tabCountUpcoming">0</span></button>
+            </div>
+
+            <div class="alerts-list-container" id="alertsListContainer">
+              <!-- Dynamically populated alert items with quick actions -->
+            </div>
+
+            <div class="alerts-panel-footer">
+              <button id="markAllAlertsViewedBtn" class="btn-link-sm"><i class="fa-solid fa-calendar-check"></i> Refresh Schedule</button>
+            </div>
+          </div>
+        </div>
+
         <button id="themeToggleBtn" class="btn-icon" title="Toggle Theme" aria-label="Toggle theme">
           <i class="fa-solid fa-sun" id="themeIcon"></i>
         </button>
@@ -70,7 +104,7 @@
 
     <!-- KPI / METRICS DASHBOARD -->
     <section class="kpi-dashboard-section" aria-label="KPI Metrics Summary">
-      <div class="kpi-grid">
+      <div class="kpi-grid kpi-grid-6">
         <!-- Metric 1: Total Leads -->
         <div class="kpi-card card-total">
           <div class="kpi-header">
@@ -116,22 +150,37 @@
           </div>
         </div>
 
-        <!-- Metric 4: High Priority / Overdue Follow-ups -->
-        <div class="kpi-card card-urgent">
+        <!-- Metric 4: OVERDUE FOLLOW-UPS (Clickable Filter) -->
+        <div class="kpi-card card-urgent clickable-kpi" id="kpiCardOverdue" title="Click to filter Overdue leads">
           <div class="kpi-header">
-            <span class="kpi-label">URGENT FOLLOW-UPS</span>
-            <div class="kpi-icon-pill"><i class="fa-solid fa-bell"></i></div>
+            <span class="kpi-label text-danger">🚨 OVERDUE LEADS</span>
+            <div class="kpi-icon-pill"><i class="fa-solid fa-triangle-exclamation"></i></div>
           </div>
           <div class="kpi-body">
-            <span class="kpi-value" id="kpiUrgentLeads">0</span>
-            <span class="kpi-subtext text-danger" id="kpiUrgentSubtext">0 Overdue</span>
+            <span class="kpi-value text-danger" id="kpiUrgentLeads">0</span>
+            <span class="kpi-subtext text-danger" id="kpiUrgentSubtext">0 Past Due</span>
           </div>
           <div class="kpi-footer-progress">
             <div class="kpi-progress-bar progress-urgent" id="kpiUrgentBar" style="width: 0%;"></div>
           </div>
         </div>
 
-        <!-- Metric 5: Average AI Lead Score -->
+        <!-- Metric 5: DUE TODAY FOLLOW-UPS (Clickable Filter) -->
+        <div class="kpi-card card-due-today clickable-kpi" id="kpiCardToday" title="Click to filter Due Today leads">
+          <div class="kpi-header">
+            <span class="kpi-label text-warning">⏰ DUE TODAY</span>
+            <div class="kpi-icon-pill"><i class="fa-solid fa-calendar-day"></i></div>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value text-warning" id="kpiTodayLeads">0</span>
+            <span class="kpi-subtext text-warning" id="kpiTodaySubtext">0 Action Today</span>
+          </div>
+          <div class="kpi-footer-progress">
+            <div class="kpi-progress-bar progress-today" id="kpiTodayBar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Metric 6: Average AI Lead Score -->
         <div class="kpi-card card-ai-score">
           <div class="kpi-header">
             <span class="kpi-label">AVG AI LEAD SCORE</span>
@@ -148,6 +197,31 @@
       </div>
     </section>
 
+    <!-- QUICK FOLLOW-UP FILTER CHIPS BAR -->
+    <div class="followup-quick-chips-bar">
+      <span class="chips-label"><i class="fa-solid fa-bolt"></i> Quick Pipeline Filters:</span>
+      <button class="quick-chip-btn active" id="chipAllLeads">All Leads</button>
+      <button class="quick-chip-btn chip-overdue" id="chipOverdue"><i class="fa-solid fa-triangle-exclamation"></i> Overdue (<span id="chipCountOverdue">0</span>)</button>
+      <button class="quick-chip-btn chip-today" id="chipToday"><i class="fa-solid fa-clock"></i> Due Today (<span id="chipCountToday">0</span>)</button>
+      <button class="quick-chip-btn chip-upcoming" id="chipUpcoming"><i class="fa-solid fa-calendar-week"></i> Next 7 Days (<span id="chipCountUpcoming">0</span>)</button>
+      <button class="quick-chip-btn chip-high" id="chipHighPriority"><i class="fa-solid fa-flag"></i> High Priority (<span id="chipCountHigh">0</span>)</button>
+    </div>
+
+    <!-- FOLLOW-UP URGENCY BANNER (Appears when overdue/today alerts exist) -->
+    <div id="followUpUrgentBanner" class="followup-alert-banner" style="display:none;">
+      <div class="banner-content">
+        <div class="banner-icon-pulse"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div class="banner-text">
+          <strong id="bannerUrgentCount">0 Overdue Follow-ups!</strong>
+          <span id="bannerUrgentDesc">Immediate client outreach required to prevent pipeline churn.</span>
+        </div>
+      </div>
+      <div class="banner-actions">
+        <button id="bannerViewUrgentBtn" class="btn btn-sm btn-danger"><i class="fa-solid fa-bolt"></i> View Urgent Leads</button>
+        <button id="bannerDismissBtn" class="banner-close-btn" title="Dismiss Banner">&times;</button>
+      </div>
+    </div>
+
     <!-- CONTROL BAR: FILTERS, VIEW TOGGLES, BATCH ACTIONS -->
     <section class="controls-section">
       <div class="controls-left">
@@ -162,6 +236,17 @@
             <option value="followup">Follow-up</option>
             <option value="converted">Converted</option>
             <option value="not intersted">Not Interested</option>
+          </select>
+        </div>
+
+        <!-- Filter: Follow-up Alert Schedule -->
+        <div class="filter-group alert-filter-highlight">
+          <label for="filterFollowUpSchedule"><i class="fa-solid fa-clock-rotate-left text-warning"></i> Follow-Up:</label>
+          <select id="filterFollowUpSchedule" class="custom-select">
+            <option value="all">All Dates</option>
+            <option value="overdue">🚨 Overdue Only</option>
+            <option value="today">⏰ Due Today</option>
+            <option value="upcoming">📅 Next 7 Days</option>
           </select>
         </div>
 

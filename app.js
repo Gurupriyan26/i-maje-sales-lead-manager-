@@ -7,7 +7,7 @@
 // ==========================================
 // 1. DATA CONSTANTS & SEED DATA
 // ==========================================
-const STORAGE_KEY = 'apex_leads_data_v2';
+const STORAGE_KEY = 'apex_leads_data_v3'; // bumped to force fresh seed with updated dates
 const THEME_KEY = 'apex_leads_theme';
 
 const STATUS_CONFIG = {
@@ -29,121 +29,170 @@ const SOURCE_CONFIG = {
   'other': { label: 'Other', icon: 'fa-tag' }
 };
 
-const SEED_LEADS = [
-  {
-    id: 'lead_1',
-    customerName: 'Sarah Jenkins',
-    company: 'Nexus Cloud Systems',
-    email: 'sarah.j@nexuscloud.io',
-    phone: '+1 (555) 234-8901',
-    leadSource: 'website',
-    assignedEmployee: 'Alex Rivera',
-    leadStatus: 'intrested',
-    priority: 'high',
-    followUpDate: '2026-10-02',
-    dealValue: 24000,
-    notes: 'Interested in enterprise cloud migration plan. Budget approved by VP of Eng. Needs custom SLA pricing proposal.',
-    activityLog: [
-      { date: '2026-09-24 10:15', note: 'Inbound demo request submitted through website.' },
-      { date: '2026-09-26 14:30', note: 'Completed 30-min discovery call. High intent client.' }
-    ],
-    createdAt: '2026-09-24T04:45:00.000Z'
-  },
-  {
-    id: 'lead_2',
-    customerName: 'Marcus Vance',
-    company: 'Apex Logistics Global',
-    email: 'm.vance@apexlogistics.com',
-    phone: '+1 (555) 912-3456',
-    leadSource: 'referral',
-    assignedEmployee: 'Jordan Lee',
-    leadStatus: 'converted',
-    priority: 'high',
-    followUpDate: '2026-09-20',
-    dealValue: 48000,
-    notes: 'Signed annual enterprise contract for fleet tracking SaaS! Successfully converted.',
-    activityLog: [
-      { date: '2026-09-12 09:00', note: 'Referred by Michael from Stripe.' },
-      { date: '2026-09-18 16:00', note: 'Executive security review cleared.' },
-      { date: '2026-09-20 11:30', note: 'Contract signed and initial deposit received.' }
-    ],
-    createdAt: '2026-09-12T03:30:00.000Z'
-  },
-  {
-    id: 'lead_3',
-    customerName: 'Elena Rostova',
-    company: 'FinPulse Pay',
-    email: 'elena@finpulse.de',
-    phone: '+49 30 12345678',
-    leadSource: 'google',
-    assignedEmployee: 'Taylor Swift',
-    leadStatus: 'followup',
-    priority: 'medium',
-    followUpDate: '2026-09-28',
-    dealValue: 18500,
-    notes: 'Requested security compliance sheet (SOC2 Type II). Follow up scheduled for today.',
-    activityLog: [
-      { date: '2026-09-20 11:00', note: 'Google ad lead from fintech campaign.' },
-      { date: '2026-09-25 15:20', note: 'Sent SOC2 documents and case studies.' }
-    ],
-    createdAt: '2026-09-20T05:30:00.000Z'
-  },
-  {
-    id: 'lead_4',
-    customerName: 'David Kim',
-    company: 'HyperScale AI',
-    email: 'david@hyperscale.ai',
-    phone: '+1 (415) 890-1234',
-    leadSource: 'social media',
-    assignedEmployee: 'Alex Rivera',
-    leadStatus: 'new',
-    priority: 'high',
-    followUpDate: '2026-09-30',
-    dealValue: 32000,
-    notes: 'Saw our LinkedIn post on AI workflow automation. Wants to test API with 10 seats.',
-    activityLog: [
-      { date: '2026-09-27 18:40', note: 'Lead captured via LinkedIn Lead Gen Form.' }
-    ],
-    createdAt: '2026-09-27T13:10:00.000Z'
-  },
-  {
-    id: 'lead_5',
-    customerName: 'Chloe Bennett',
-    company: 'Urban Health Labs',
-    email: 'c.bennett@urbanhealth.org',
-    phone: '+1 (555) 778-9012',
-    leadSource: 'email',
-    assignedEmployee: 'Jordan Lee',
-    leadStatus: 'contacted',
-    priority: 'low',
-    followUpDate: '2026-10-05',
-    dealValue: 9500,
-    notes: 'Cold email reply. Evaluating 3 vendors, will review internally next week.',
-    activityLog: [
-      { date: '2026-09-22 08:30', note: 'Outbound sequence response received.' }
-    ],
-    createdAt: '2026-09-22T03:00:00.000Z'
-  },
-  {
-    id: 'lead_6',
-    customerName: 'Arthur Pendelton',
-    company: 'Heritage Retail Group',
-    email: 'arthur@heritageretail.com',
-    phone: '+1 (555) 345-6789',
-    leadSource: 'phone',
-    assignedEmployee: 'Marcus Vance',
-    leadStatus: 'not intersted',
-    priority: 'low',
-    followUpDate: '2026-09-15',
-    dealValue: 5000,
-    notes: 'Already locked into a 3-year contract with legacy ERP provider. Revisit next year.',
-    activityLog: [
-      { date: '2026-09-14 14:00', note: 'Inbound phone inquiry.' },
-      { date: '2026-09-15 10:00', note: 'Client decided to stay with existing provider.' }
-    ],
-    createdAt: '2026-09-14T08:30:00.000Z'
-  }
-];
+// Helper: generate a date string offset by N days from today
+function seedDate(offsetDays) {
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  return d.toISOString().split('T')[0];
+}
+
+function buildSeedLeads() {
+  return [
+    {
+      id: 'lead_1',
+      customerName: 'Sarah Jenkins',
+      company: 'Nexus Cloud Systems',
+      email: 'sarah.j@nexuscloud.io',
+      phone: '+1 (555) 234-8901',
+      leadSource: 'website',
+      assignedEmployee: 'Alex Rivera',
+      leadStatus: 'intrested',
+      priority: 'high',
+      followUpDate: seedDate(-3), // OVERDUE: 3 days ago
+      dealValue: 24000,
+      notes: 'Interested in enterprise cloud migration plan. Budget approved by VP of Eng. Needs custom SLA pricing proposal.',
+      activityLog: [
+        { date: '10:15', note: 'Inbound demo request submitted through website.' },
+        { date: '14:30', note: 'Completed 30-min discovery call. High intent client.' }
+      ],
+      createdAt: new Date(Date.now() - 4 * 86400000).toISOString()
+    },
+    {
+      id: 'lead_2',
+      customerName: 'Marcus Vance',
+      company: 'Apex Logistics Global',
+      email: 'm.vance@apexlogistics.com',
+      phone: '+1 (555) 912-3456',
+      leadSource: 'referral',
+      assignedEmployee: 'Jordan Lee',
+      leadStatus: 'converted',
+      priority: 'high',
+      followUpDate: seedDate(-8),
+      dealValue: 48000,
+      notes: 'Signed annual enterprise contract for fleet tracking SaaS! Successfully converted.',
+      activityLog: [
+        { date: '09:00', note: 'Referred by Michael from Stripe.' },
+        { date: '16:00', note: 'Executive security review cleared.' },
+        { date: '11:30', note: 'Contract signed and initial deposit received.' }
+      ],
+      createdAt: new Date(Date.now() - 16 * 86400000).toISOString()
+    },
+    {
+      id: 'lead_3',
+      customerName: 'Elena Rostova',
+      company: 'FinPulse Pay',
+      email: 'elena@finpulse.de',
+      phone: '+49 30 12345678',
+      leadSource: 'google',
+      assignedEmployee: 'Taylor Singh',
+      leadStatus: 'followup',
+      priority: 'medium',
+      followUpDate: seedDate(0), // DUE TODAY
+      dealValue: 18500,
+      notes: 'Requested security compliance sheet (SOC2 Type II). Follow up is scheduled for TODAY - reach out immediately!',
+      activityLog: [
+        { date: '11:00', note: 'Google ad lead from fintech campaign.' },
+        { date: '15:20', note: 'Sent SOC2 documents and case studies.' }
+      ],
+      createdAt: new Date(Date.now() - 8 * 86400000).toISOString()
+    },
+    {
+      id: 'lead_4',
+      customerName: 'David Kim',
+      company: 'HyperScale AI',
+      email: 'david@hyperscale.ai',
+      phone: '+1 (415) 890-1234',
+      leadSource: 'social media',
+      assignedEmployee: 'Alex Rivera',
+      leadStatus: 'new',
+      priority: 'high',
+      followUpDate: seedDate(2), // Upcoming in 2 days
+      dealValue: 32000,
+      notes: 'Saw our LinkedIn post on AI workflow automation. Wants to test API with 10 seats.',
+      activityLog: [
+        { date: '18:40', note: 'Lead captured via LinkedIn Lead Gen Form.' }
+      ],
+      createdAt: new Date(Date.now() - 1 * 86400000).toISOString()
+    },
+    {
+      id: 'lead_5',
+      customerName: 'Chloe Bennett',
+      company: 'Urban Health Labs',
+      email: 'c.bennett@urbanhealth.org',
+      phone: '+1 (555) 778-9012',
+      leadSource: 'email',
+      assignedEmployee: 'Jordan Lee',
+      leadStatus: 'contacted',
+      priority: 'low',
+      followUpDate: seedDate(7), // Upcoming in 7 days
+      dealValue: 9500,
+      notes: 'Cold email reply. Evaluating 3 vendors, will review internally next week.',
+      activityLog: [
+        { date: '08:30', note: 'Outbound sequence response received.' }
+      ],
+      createdAt: new Date(Date.now() - 6 * 86400000).toISOString()
+    },
+    {
+      id: 'lead_6',
+      customerName: 'Arthur Pendelton',
+      company: 'Heritage Retail Group',
+      email: 'arthur@heritageretail.com',
+      phone: '+1 (555) 345-6789',
+      leadSource: 'phone',
+      assignedEmployee: 'Marcus Reyes',
+      leadStatus: 'not intersted',
+      priority: 'low',
+      followUpDate: seedDate(-15),
+      dealValue: 5000,
+      notes: 'Already locked into a 3-year contract with legacy ERP provider. Revisit next year.',
+      activityLog: [
+        { date: '14:00', note: 'Inbound phone inquiry.' },
+        { date: '10:00', note: 'Client decided to stay with existing provider.' }
+      ],
+      createdAt: new Date(Date.now() - 20 * 86400000).toISOString()
+    },
+    {
+      id: 'lead_7',
+      customerName: 'Priya Sharma',
+      company: 'BrightEdge Analytics',
+      email: 'priya@brightedge.in',
+      phone: '+91 98765 43210',
+      leadSource: 'referral',
+      assignedEmployee: 'Neha Kapoor',
+      leadStatus: 'followup',
+      priority: 'high',
+      followUpDate: seedDate(-1), // OVERDUE: yesterday
+      dealValue: 27500,
+      notes: 'Hot prospect referred by existing client. Missed follow-up yesterday — needs immediate callback.',
+      activityLog: [
+        { date: '09:30', note: 'Referral from Rajesh at Infosys.' },
+        { date: '14:00', note: 'Initial discovery call completed. Very interested.' }
+      ],
+      createdAt: new Date(Date.now() - 5 * 86400000).toISOString()
+    },
+    {
+      id: 'lead_8',
+      customerName: 'Liam O\'Sullivan',
+      company: 'GreenField PropTech',
+      email: 'liam@greenfield.ie',
+      phone: '+353 1 234 5678',
+      leadSource: 'website',
+      assignedEmployee: 'Alex Rivera',
+      leadStatus: 'contacted',
+      priority: 'medium',
+      followUpDate: seedDate(0), // DUE TODAY
+      dealValue: 15000,
+      notes: 'Property tech startup expanding into Asia-Pacific. Requested pricing deck today.',
+      activityLog: [
+        { date: '16:00', note: 'Website contact form submission.' },
+        { date: '10:00', note: 'Intro call scheduled for today afternoon.' }
+      ],
+      createdAt: new Date(Date.now() - 3 * 86400000).toISOString()
+    }
+  ];
+}
+
+const SEED_LEADS = buildSeedLeads();
 
 // ==========================================
 // 2. APPLICATION STATE
@@ -159,10 +208,13 @@ let sortDirection = 'asc';
 const activeFilters = {
   search: '',
   status: 'all',
+  followUpSchedule: 'all', // 'all' | 'overdue' | 'today' | 'upcoming'
   source: 'all',
   employee: 'all',
   priority: 'all'
 };
+
+let currentAlertTab = 'all'; // 'all' | 'overdue' | 'today' | 'upcoming'
 
 // ==========================================
 // 3. INITIALIZATION
@@ -226,6 +278,65 @@ function saveLeadsToStorage() {
 // 4. EVENT LISTENERS
 // ==========================================
 function initEventListeners() {
+  // Follow-Up Alerts Bell Toggle
+  const alertBellBtn = document.getElementById('alertBellBtn');
+  const alertsPanel = document.getElementById('alertsPanel');
+
+  if (alertBellBtn && alertsPanel) {
+    alertBellBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      alertsPanel.classList.toggle('show');
+    });
+
+    window.addEventListener('click', () => {
+      alertsPanel.classList.remove('show');
+    });
+
+    alertsPanel.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+  }
+
+  // Follow-Up Alert Tab Buttons
+  document.querySelectorAll('.alert-tab-btn').forEach(tabBtn => {
+    tabBtn.addEventListener('click', () => {
+      document.querySelectorAll('.alert-tab-btn').forEach(b => b.classList.remove('active'));
+      tabBtn.classList.add('active');
+      currentAlertTab = tabBtn.getAttribute('data-tab');
+      renderAlertsList();
+    });
+  });
+
+  // Follow-Up Urgency Banner Listeners
+  const bannerViewUrgentBtn = document.getElementById('bannerViewUrgentBtn');
+  const bannerDismissBtn = document.getElementById('bannerDismissBtn');
+  const banner = document.getElementById('followUpUrgentBanner');
+
+  if (bannerViewUrgentBtn) {
+    bannerViewUrgentBtn.addEventListener('click', () => {
+      activeFilters.followUpSchedule = 'overdue';
+      const select = document.getElementById('filterFollowUpSchedule');
+      if (select) select.value = 'overdue';
+      renderApp();
+      showToast('Filtering for Overdue Follow-ups', 'warning');
+    });
+  }
+
+  if (bannerDismissBtn && banner) {
+    bannerDismissBtn.addEventListener('click', () => {
+      banner.style.display = 'none';
+    });
+  }
+
+  // Follow-Up Schedule Filter Dropdown
+  const filterFollowUpSchedule = document.getElementById('filterFollowUpSchedule');
+  if (filterFollowUpSchedule) {
+    filterFollowUpSchedule.addEventListener('change', (e) => {
+      activeFilters.followUpSchedule = e.target.value;
+      renderApp();
+    });
+  }
+
   // Theme Toggle
   document.getElementById('themeToggleBtn').addEventListener('click', toggleTheme);
 
@@ -254,6 +365,7 @@ function initEventListeners() {
       searchInput.focus();
     } else if (e.key === 'Escape') {
       closeAllModals();
+      if (alertsPanel) alertsPanel.classList.remove('show');
     }
   });
 
@@ -307,7 +419,42 @@ function initEventListeners() {
     dataDropdownMenu.classList.remove('show');
   });
 
+  // KPI Clickable Cards -> Quick Filters
+  const kpiCardOverdue = document.getElementById('kpiCardOverdue');
+  const kpiCardToday = document.getElementById('kpiCardToday');
+
+  if (kpiCardOverdue) {
+    kpiCardOverdue.addEventListener('click', () => {
+      setQuickFilter('overdue');
+    });
+  }
+  if (kpiCardToday) {
+    kpiCardToday.addEventListener('click', () => {
+      setQuickFilter('today');
+    });
+  }
+
+  // Quick Chips Listeners
+  document.getElementById('chipAllLeads')?.addEventListener('click', () => setQuickFilter('all'));
+  document.getElementById('chipOverdue')?.addEventListener('click', () => setQuickFilter('overdue'));
+  document.getElementById('chipToday')?.addEventListener('click', () => setQuickFilter('today'));
+  document.getElementById('chipUpcoming')?.addEventListener('click', () => setQuickFilter('upcoming'));
+  document.getElementById('chipHighPriority')?.addEventListener('click', () => setQuickFilter('high-priority'));
+
+  // Refresh Schedule button in alerts panel
+  const markAllAlertsViewedBtn = document.getElementById('markAllAlertsViewedBtn');
+  if (markAllAlertsViewedBtn) {
+    markAllAlertsViewedBtn.addEventListener('click', () => {
+      currentAlertTab = 'all';
+      document.querySelectorAll('.alert-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('.alert-tab-btn[data-tab="all"]')?.classList.add('active');
+      renderFollowUpAlertsCenter();
+      showToast('Follow-up schedule refreshed', 'info');
+    });
+  }
+
   // Export JSON / CSV
+
   document.getElementById('exportJsonBtn').addEventListener('click', (e) => {
     e.preventDefault();
     exportDataAsJson();
@@ -326,13 +473,14 @@ function initEventListeners() {
   document.getElementById('resetSeedBtn').addEventListener('click', (e) => {
     e.preventDefault();
     if (confirm('Reset all leads to default demo data? Your current custom leads will be replaced.')) {
-      leads = JSON.parse(JSON.stringify(SEED_LEADS));
+      leads = buildSeedLeads(); // rebuild with fresh relative dates
       saveLeadsToStorage();
       populateEmployeeFilterOptions();
       renderApp();
-      showToast('Lead database reset to demo dataset', 'success');
+      showToast('Lead database reset to fresh demo dataset', 'success');
     }
   });
+
 
   // AI Pipeline Copilot Overview Modal
   document.getElementById('aiInsightsBtn').addEventListener('click', openAiOverviewModal);
@@ -423,6 +571,7 @@ function switchView(viewName) {
 function resetAllFilters() {
   activeFilters.search = '';
   activeFilters.status = 'all';
+  activeFilters.followUpSchedule = 'all';
   activeFilters.source = 'all';
   activeFilters.employee = 'all';
   activeFilters.priority = 'all';
@@ -430,6 +579,8 @@ function resetAllFilters() {
   document.getElementById('searchInput').value = '';
   document.getElementById('clearSearchBtn').style.display = 'none';
   document.getElementById('filterStatus').value = 'all';
+  const followUpSelect = document.getElementById('filterFollowUpSchedule');
+  if (followUpSelect) followUpSelect.value = 'all';
   document.getElementById('filterSource').value = 'all';
   document.getElementById('filterEmployee').value = 'all';
   document.getElementById('filterPriority').value = 'all';
@@ -446,6 +597,7 @@ function renderApp() {
 
   renderKpiMetrics();
   renderActiveFilterTags();
+  renderFollowUpAlertsCenter();
 
   if (currentView === 'kanban') {
     renderKanban(filteredLeads);
@@ -455,6 +607,9 @@ function renderApp() {
 }
 
 function getFilteredLeads() {
+  const todayStr = new Date().toISOString().split('T')[0];
+  const next7DaysStr = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
   return leads.filter(lead => {
     // Search match
     if (activeFilters.search) {
@@ -476,6 +631,21 @@ function getFilteredLeads() {
       return false;
     }
 
+    // Follow-up Alert Schedule Filter
+    if (activeFilters.followUpSchedule !== 'all') {
+      const date = lead.followUpDate;
+      const isClosed = lead.leadStatus === 'converted' || lead.leadStatus === 'not intersted';
+      if (isClosed || !date) return false;
+
+      if (activeFilters.followUpSchedule === 'overdue' && date >= todayStr) {
+        return false;
+      } else if (activeFilters.followUpSchedule === 'today' && date !== todayStr) {
+        return false;
+      } else if (activeFilters.followUpSchedule === 'upcoming' && (date <= todayStr || date > next7DaysStr)) {
+        return false;
+      }
+    }
+
     // Source filter
     if (activeFilters.source !== 'all' && lead.leadSource !== activeFilters.source) {
       return false;
@@ -495,19 +665,68 @@ function getFilteredLeads() {
   });
 }
 
+// Quick Pipeline Filter Controller
+function setQuickFilter(type) {
+  // Reset other filters
+  if (type === 'all') {
+    activeFilters.followUpSchedule = 'all';
+    activeFilters.priority = 'all';
+  } else if (type === 'overdue') {
+    activeFilters.followUpSchedule = 'overdue';
+    activeFilters.priority = 'all';
+  } else if (type === 'today') {
+    activeFilters.followUpSchedule = 'today';
+    activeFilters.priority = 'all';
+  } else if (type === 'upcoming') {
+    activeFilters.followUpSchedule = 'upcoming';
+    activeFilters.priority = 'all';
+  } else if (type === 'high-priority') {
+    activeFilters.priority = 'high';
+    activeFilters.followUpSchedule = 'all';
+  }
+
+  // Update sync select dropdowns
+  const followUpSelect = document.getElementById('filterFollowUpSchedule');
+  if (followUpSelect) followUpSelect.value = activeFilters.followUpSchedule;
+  const prioritySelect = document.getElementById('filterPriority');
+  if (prioritySelect) prioritySelect.value = activeFilters.priority;
+
+  // Update active states on Quick Chips
+  document.querySelectorAll('.quick-chip-btn').forEach(btn => btn.classList.remove('active'));
+  if (type === 'all') document.getElementById('chipAllLeads')?.classList.add('active');
+  else if (type === 'overdue') document.getElementById('chipOverdue')?.classList.add('active');
+  else if (type === 'today') document.getElementById('chipToday')?.classList.add('active');
+  else if (type === 'upcoming') document.getElementById('chipUpcoming')?.classList.add('active');
+  else if (type === 'high-priority') document.getElementById('chipHighPriority')?.classList.add('active');
+
+  // Update active state on KPI cards
+  document.getElementById('kpiCardOverdue')?.classList.toggle('active-kpi-filter', type === 'overdue');
+  document.getElementById('kpiCardToday')?.classList.toggle('active-kpi-filter', type === 'today');
+
+  renderApp();
+  showToast(`Filtered leads: ${type.replace('-', ' ').toUpperCase()}`, 'info');
+}
+
 // ==========================================
-// 6. KPI DASHBOARD CALCULATIONS
+// 6. KPI DASHBOARD & FOLLOW-UP ALERT CENTER CALCULATIONS
 // ==========================================
 function renderKpiMetrics() {
   const totalLeads = leads.length;
   const convertedLeads = leads.filter(l => l.leadStatus === 'converted').length;
   const pendingLeads = leads.filter(l => ['new', 'contacted', 'intrested', 'followup'].includes(l.leadStatus)).length;
+  const highPriorityLeads = leads.filter(l => l.priority === 'high').length;
   
-  // Urgent / Overdue Leads
+  // Follow-up calculations
   const todayStr = new Date().toISOString().split('T')[0];
-  const overdueLeads = leads.filter(l => {
-    return l.leadStatus !== 'converted' && l.leadStatus !== 'not intersted' && l.followUpDate && l.followUpDate <= todayStr;
-  }).length;
+  const next7DaysStr = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+  const activeAlertLeads = leads.filter(l => {
+    return l.leadStatus !== 'converted' && l.leadStatus !== 'not intersted' && l.followUpDate;
+  });
+
+  const overdueLeads = activeAlertLeads.filter(l => l.followUpDate < todayStr).length;
+  const todayLeads = activeAlertLeads.filter(l => l.followUpDate === todayStr).length;
+  const upcomingLeads = activeAlertLeads.filter(l => l.followUpDate > todayStr && l.followUpDate <= next7DaysStr).length;
 
   // Average AI Score
   const totalAiScore = leads.reduce((acc, lead) => acc + calculateAiScore(lead), 0);
@@ -517,7 +736,7 @@ function renderKpiMetrics() {
   const convRate = totalLeads > 0 ? Math.round((convertedLeads / totalLeads) * 100) : 0;
   const pendingRate = totalLeads > 0 ? Math.round((pendingLeads / totalLeads) * 100) : 0;
 
-  // DOM Updates
+  // DOM Updates: KPI Cards
   document.getElementById('kpiTotalLeads').textContent = totalLeads;
   document.getElementById('kpiConvertedLeads').textContent = convertedLeads;
   document.getElementById('kpiConversionRate').textContent = `${convRate}% Rate`;
@@ -526,12 +745,230 @@ function renderKpiMetrics() {
   document.getElementById('kpiPendingLeads').textContent = pendingLeads;
   document.getElementById('kpiPendingBar').style.width = `${pendingRate}%`;
 
-  document.getElementById('kpiUrgentLeads').textContent = overdueLeads;
-  document.getElementById('kpiUrgentSubtext').textContent = `${overdueLeads} Action Required`;
-  document.getElementById('kpiUrgentBar').style.width = totalLeads > 0 ? `${(overdueLeads / totalLeads) * 100}%` : '0%';
+  // Overdue KPI Card
+  const kpiUrgent = document.getElementById('kpiUrgentLeads');
+  if (kpiUrgent) kpiUrgent.textContent = overdueLeads;
+  const kpiUrgentSubtext = document.getElementById('kpiUrgentSubtext');
+  if (kpiUrgentSubtext) kpiUrgentSubtext.textContent = `${overdueLeads} Past Due`;
+  const kpiUrgentBar = document.getElementById('kpiUrgentBar');
+  if (kpiUrgentBar) kpiUrgentBar.style.width = totalLeads > 0 ? `${(overdueLeads / totalLeads) * 100}%` : '0%';
+
+  // Due Today KPI Card
+  const kpiToday = document.getElementById('kpiTodayLeads');
+  if (kpiToday) kpiToday.textContent = todayLeads;
+  const kpiTodaySubtext = document.getElementById('kpiTodaySubtext');
+  if (kpiTodaySubtext) kpiTodaySubtext.textContent = `${todayLeads} Action Today`;
+  const kpiTodayBar = document.getElementById('kpiTodayBar');
+  if (kpiTodayBar) kpiTodayBar.style.width = totalLeads > 0 ? `${(todayLeads / totalLeads) * 100}%` : '0%';
 
   document.getElementById('kpiAvgScore').innerHTML = `${avgAiScore}<small>/100</small>`;
   document.getElementById('kpiScoreBar').style.width = `${avgAiScore}%`;
+
+  // Quick Chips Counts
+  const chipOverdue = document.getElementById('chipCountOverdue');
+  const chipToday = document.getElementById('chipCountToday');
+  const chipUpcoming = document.getElementById('chipCountUpcoming');
+  const chipHigh = document.getElementById('chipCountHigh');
+  if (chipOverdue) chipOverdue.textContent = overdueLeads;
+  if (chipToday) chipToday.textContent = todayLeads;
+  if (chipUpcoming) chipUpcoming.textContent = upcomingLeads;
+  if (chipHigh) chipHigh.textContent = highPriorityLeads;
+}
+
+// Follow-Up Notification Bell & Alert Center Engine
+function renderFollowUpAlertsCenter() {
+  const todayStr = new Date().toISOString().split('T')[0];
+  const next7DaysStr = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+  const activeAlertLeads = leads.filter(l => {
+    return l.leadStatus !== 'converted' && l.leadStatus !== 'not intersted' && l.followUpDate;
+  });
+
+  const overdueList = activeAlertLeads.filter(l => l.followUpDate < todayStr);
+  const todayList = activeAlertLeads.filter(l => l.followUpDate === todayStr);
+  const upcomingList = activeAlertLeads.filter(l => l.followUpDate > todayStr && l.followUpDate <= next7DaysStr);
+
+  const totalUrgent = overdueList.length + todayList.length;
+
+  // Bell Badge & Bell Pulse
+  const alertBellBtn = document.getElementById('alertBellBtn');
+  const alertBadgeCount = document.getElementById('alertBadgeCount');
+  if (alertBadgeCount) {
+    if (totalUrgent > 0) {
+      alertBadgeCount.textContent = totalUrgent;
+      alertBadgeCount.style.display = 'block';
+      if (alertBellBtn) alertBellBtn.classList.add('has-urgent-alerts');
+    } else {
+      alertBadgeCount.style.display = 'none';
+      if (alertBellBtn) alertBellBtn.classList.remove('has-urgent-alerts');
+    }
+  }
+
+  // Header pill & Tab counts
+  const summaryEl = document.getElementById('alertsTotalSummary');
+  if (summaryEl) summaryEl.textContent = `${totalUrgent} Action Required`;
+
+  const tabOverdue = document.getElementById('tabCountOverdue');
+  const tabToday = document.getElementById('tabCountToday');
+  const tabUpcoming = document.getElementById('tabCountUpcoming');
+  if (tabOverdue) tabOverdue.textContent = overdueList.length;
+  if (tabToday) tabToday.textContent = todayList.length;
+  if (tabUpcoming) tabUpcoming.textContent = upcomingList.length;
+
+  // Top Urgency Banner
+  const banner = document.getElementById('followUpUrgentBanner');
+  const bannerCount = document.getElementById('bannerUrgentCount');
+  if (banner && bannerCount) {
+    if (overdueList.length > 0) {
+      bannerCount.textContent = `${overdueList.length} Overdue Follow-up${overdueList.length > 1 ? 's' : ''}!`;
+      banner.style.display = 'flex';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
+  renderAlertsList();
+}
+
+function renderAlertsList() {
+  const container = document.getElementById('alertsListContainer');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const todayStr = new Date().toISOString().split('T')[0];
+  const next7DaysStr = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+
+  const activeAlertLeads = leads.filter(l => {
+    return l.leadStatus !== 'converted' && l.leadStatus !== 'not intersted' && l.followUpDate;
+  });
+
+  // 'all' tab: sort overdue (oldest first) then today then upcoming, with section dividers
+  if (currentAlertTab === 'all') {
+    const overdueLeads = activeAlertLeads.filter(l => l.followUpDate < todayStr).sort((a,b) => a.followUpDate.localeCompare(b.followUpDate));
+    const todayLeads  = activeAlertLeads.filter(l => l.followUpDate === todayStr);
+    const upcomingLeads = activeAlertLeads.filter(l => l.followUpDate > todayStr && l.followUpDate <= next7DaysStr);
+
+    if (overdueLeads.length === 0 && todayLeads.length === 0 && upcomingLeads.length === 0) {
+      container.innerHTML = `<div style="text-align:center;padding:24px 12px;color:var(--text-dim);font-size:0.84rem;"><i class="fa-solid fa-calendar-check" style="font-size:1.8rem;margin-bottom:6px;display:block;color:var(--success);"></i>All caught up! No follow-ups pending.</div>`;
+      return;
+    }
+
+    if (overdueLeads.length > 0) {
+      const hdr = document.createElement('div');
+      hdr.className = 'alert-section-header overdue-header';
+      hdr.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Overdue (${overdueLeads.length})`;
+      container.appendChild(hdr);
+      overdueLeads.forEach(lead => container.appendChild(buildAlertCard(lead, todayStr)));
+    }
+    if (todayLeads.length > 0) {
+      const hdr = document.createElement('div');
+      hdr.className = 'alert-section-header today-header';
+      hdr.innerHTML = `<i class="fa-solid fa-clock"></i> Due Today (${todayLeads.length})`;
+      container.appendChild(hdr);
+      todayLeads.forEach(lead => container.appendChild(buildAlertCard(lead, todayStr)));
+    }
+    if (upcomingLeads.length > 0) {
+      const hdr = document.createElement('div');
+      hdr.className = 'alert-section-header upcoming-header';
+      hdr.innerHTML = `<i class="fa-solid fa-calendar-week"></i> Upcoming 7 Days (${upcomingLeads.length})`;
+      container.appendChild(hdr);
+      upcomingLeads.forEach(lead => container.appendChild(buildAlertCard(lead, todayStr)));
+    }
+    return;
+  }
+
+  // Specific tabs
+  let displayList = [];
+  if (currentAlertTab === 'overdue') {
+    displayList = activeAlertLeads.filter(l => l.followUpDate < todayStr).sort((a,b) => a.followUpDate.localeCompare(b.followUpDate));
+  } else if (currentAlertTab === 'today') {
+    displayList = activeAlertLeads.filter(l => l.followUpDate === todayStr);
+  } else if (currentAlertTab === 'upcoming') {
+    displayList = activeAlertLeads.filter(l => l.followUpDate > todayStr && l.followUpDate <= next7DaysStr);
+  }
+
+  if (displayList.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 24px 12px; color: var(--text-dim); font-size: 0.84rem;">
+        <i class="fa-solid fa-calendar-check" style="font-size: 1.8rem; margin-bottom: 6px; display: block; color: var(--success);"></i>
+        No follow-up alerts in this category!
+      </div>
+    `;
+    return;
+  }
+
+  displayList.forEach(lead => {
+    container.appendChild(buildAlertCard(lead, todayStr));
+  });
+}
+
+// Build a single alert card element (extracted for reuse)
+function buildAlertCard(lead, todayStr) {
+  const card = document.createElement('div');
+    const isOverdue = lead.followUpDate < todayStr;
+    const isToday = lead.followUpDate === todayStr;
+    const statusType = isOverdue ? 'overdue' : (isToday ? 'today' : 'upcoming');
+    const labelText = isOverdue ? '🚨 Overdue' : (isToday ? '⏰ Due Today' : '📅 Upcoming');
+
+    // Calculate how many days overdue
+    let daysInfo = '';
+    if (isOverdue) {
+      const msPerDay = 86400000;
+      const daysAgo = Math.floor((new Date(todayStr) - new Date(lead.followUpDate)) / msPerDay);
+      daysInfo = `<span style="font-size:0.7rem;color:var(--danger);font-weight:700;"> (${daysAgo}d overdue)</span>`;
+    }
+
+    card.className = `alert-item-card ${statusType}`;
+    card.innerHTML = `
+      <div class="alert-item-top">
+        <span class="alert-lead-name" title="Open lead profile">${escapeHtml(lead.customerName)}</span>
+        <span class="alert-time-tag ${statusType}">${labelText}</span>
+      </div>
+      <div class="alert-company-line">
+        <i class="fa-solid fa-building"></i> ${escapeHtml(lead.company || 'Direct')} &bull; <span class="alert-rep-tag"><i class="fa-solid fa-user-tie"></i> ${escapeHtml(lead.assignedEmployee || 'Unassigned')}</span>
+      </div>
+      <div style="font-size:0.76rem;color:var(--text-dim);"><i class="fa-solid fa-calendar-day"></i> Scheduled: ${formatDateDisplay(lead.followUpDate)}${daysInfo}</div>
+      <div class="alert-actions-row">
+        <div class="alert-quick-actions">
+          <button class="btn-alert-action snooze-1d-btn" title="Postpone by 1 day"><i class="fa-solid fa-forward"></i> +1 Day</button>
+          <button class="btn-alert-action snooze-3d-btn" title="Postpone by 3 days"><i class="fa-solid fa-forward-step"></i> +3 Days</button>
+        </div>
+        <div class="alert-quick-actions">
+          <a href="mailto:${escapeHtml(lead.email)}" class="btn-alert-action" title="Email customer"><i class="fa-solid fa-envelope"></i></a>
+          <a href="tel:${escapeHtml(lead.phone)}" class="btn-alert-action" title="Call customer"><i class="fa-solid fa-phone"></i></a>
+        </div>
+      </div>
+    `;
+
+    card.querySelector('.alert-lead-name').addEventListener('click', () => {
+      document.getElementById('alertsPanel')?.classList.remove('show');
+      openViewDetailsModal(lead);
+    });
+    card.querySelector('.snooze-1d-btn').addEventListener('click', () => snoozeLeadFollowUp(lead.id, 1));
+    card.querySelector('.snooze-3d-btn').addEventListener('click', () => snoozeLeadFollowUp(lead.id, 3));
+
+  return card;
+}
+
+function snoozeLeadFollowUp(leadId, days) {
+  const index = leads.findIndex(l => l.id === leadId);
+  if (index !== -1) {
+    const lead = leads[index];
+    const baseDate = new Date();
+    baseDate.setDate(baseDate.getDate() + days);
+    const newDateStr = baseDate.toISOString().split('T')[0];
+
+    lead.followUpDate = newDateStr;
+    if (!lead.activityLog) lead.activityLog = [];
+    lead.activityLog.unshift({
+      date: formatCurrentTimestamp(),
+      note: `Follow-up date rescheduled by +${days} day(s) to ${formatDateDisplay(newDateStr)}.`
+    });
+
+    saveLeadsToStorage();
+    renderApp();
+    showToast(`Rescheduled follow-up for "${lead.customerName}" (+${days}d)`, 'success');
+  }
 }
 
 // ==========================================
@@ -550,6 +987,10 @@ function renderActiveFilterTags() {
   }
   if (activeFilters.status !== 'all') {
     activeEntries.push({ key: 'status', label: `Status: ${STATUS_CONFIG[activeFilters.status]?.label || activeFilters.status}` });
+  }
+  if (activeFilters.followUpSchedule !== 'all') {
+    const scheduleLabels = { overdue: '🚨 Overdue Follow-ups', today: '⏰ Due Today', upcoming: '📅 Next 7 Days' };
+    activeEntries.push({ key: 'followUpSchedule', label: `Follow-up: ${scheduleLabels[activeFilters.followUpSchedule] || activeFilters.followUpSchedule}` });
   }
   if (activeFilters.source !== 'all') {
     activeEntries.push({ key: 'source', label: `Source: ${SOURCE_CONFIG[activeFilters.source]?.label || activeFilters.source}` });
@@ -591,6 +1032,10 @@ function removeSingleFilter(key) {
   } else if (key === 'status') {
     activeFilters.status = 'all';
     document.getElementById('filterStatus').value = 'all';
+  } else if (key === 'followUpSchedule') {
+    activeFilters.followUpSchedule = 'all';
+    const sel = document.getElementById('filterFollowUpSchedule');
+    if (sel) sel.value = 'all';
   } else if (key === 'source') {
     activeFilters.source = 'all';
     document.getElementById('filterSource').value = 'all';
@@ -685,7 +1130,16 @@ function renderKanban(filteredLeads) {
 
 function createKanbanCard(lead) {
   const card = document.createElement('div');
-  card.className = 'kanban-card';
+  const todayStr = new Date().toISOString().split('T')[0];
+  const isClosed = lead.leadStatus === 'converted' || lead.leadStatus === 'not intersted';
+  const isOverdue = !isClosed && lead.followUpDate && lead.followUpDate < todayStr;
+  const isToday = !isClosed && lead.followUpDate && lead.followUpDate === todayStr;
+
+  let highlightClass = '';
+  if (isOverdue) highlightClass = 'card-overdue-highlight';
+  else if (isToday) highlightClass = 'card-today-highlight';
+
+  card.className = `kanban-card ${highlightClass}`;
   card.setAttribute('draggable', 'true');
   card.setAttribute('data-lead-id', lead.id);
 
@@ -815,8 +1269,17 @@ function renderTable(filteredLeads = getFilteredLeads()) {
     emptyState.style.display = 'none';
   }
 
+  const todayStr = new Date().toISOString().split('T')[0];
+
   sortedLeads.forEach(lead => {
     const tr = document.createElement('tr');
+    const isClosed = lead.leadStatus === 'converted' || lead.leadStatus === 'not intersted';
+    const isOverdue = !isClosed && lead.followUpDate && lead.followUpDate < todayStr;
+    const isToday = !isClosed && lead.followUpDate && lead.followUpDate === todayStr;
+
+    if (isOverdue) tr.className = 'table-row-overdue';
+    else if (isToday) tr.className = 'table-row-today';
+
     const aiScore = calculateAiScore(lead);
     const initials = getInitials(lead.customerName);
     const scoreCls = aiScore >= 80 ? 'high' : (aiScore >= 50 ? 'mid' : 'low');
@@ -858,7 +1321,11 @@ function renderTable(filteredLeads = getFilteredLeads()) {
         <span class="priority-badge priority-${lead.priority}">${lead.priority?.toUpperCase()}</span>
       </td>
       <td>
-        <span class="${followUpBadge.cls}" style="font-size: 0.82rem;">${followUpBadge.text}</span>
+        <div style="display:flex;flex-direction:column;gap:3px;">
+          <span class="${followUpBadge.cls}" style="font-size:0.82rem;">${followUpBadge.text}</span>
+          ${isOverdue ? '<span class="followup-urgent-label overdue-label"><i class="fa-solid fa-triangle-exclamation"></i> OVERDUE</span>' : ''}
+          ${isToday ? '<span class="followup-urgent-label today-label"><i class="fa-solid fa-clock"></i> ACT TODAY</span>' : ''}
+        </div>
       </td>
       <td>
         <span class="table-score-badge ${scoreCls}">
