@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ApexLead AI - Enterprise Sales Lead Manager</title>
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="theme-dark">
+  <div class="app-container">
+    
+    <!-- TOP NAVIGATION BAR -->
+    <header class="top-navbar">
+      <div class="navbar-left">
+        <div class="brand-logo">
+          <div class="logo-icon"><i class="fa-solid fa-chart-line-up"></i><i class="fa-solid fa-bolt-lightning"></i></div>
+          <div class="brand-text">
+            <span class="brand-title">ApexLead <span class="badge-ai"><i class="fa-solid fa-sparkles"></i> AI</span></span>
+            <span class="brand-subtitle">Smart Sales Pipeline Manager</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="navbar-center search-bar-wrapper">
+        <div class="global-search-container">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="searchInput" placeholder="Search by name, company, email, phone, notes..." autocomplete="off" />
+          <button id="clearSearchBtn" class="clear-search-btn" title="Clear Search" style="display:none;"><i class="fa-solid fa-xmark"></i></button>
+          <div class="search-kbd-hint"><kbd>/</kbd></div>
+        </div>
+      </div>
+
+      <div class="navbar-right">
+        <button id="themeToggleBtn" class="btn-icon" title="Toggle Theme" aria-label="Toggle theme">
+          <i class="fa-solid fa-sun" id="themeIcon"></i>
+        </button>
+        <button id="aiInsightsBtn" class="btn btn-secondary btn-ai-pulse" title="AI Pipeline Insights">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>AI Copilot</span>
+        </button>
+        <div class="data-actions-dropdown">
+          <button id="dataOptionsBtn" class="btn btn-secondary btn-icon-text">
+            <i class="fa-solid fa-database"></i>
+            <span>Data</span>
+            <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+          </button>
+          <div class="dropdown-menu" id="dataDropdownMenu">
+            <a href="#" id="exportJsonBtn"><i class="fa-solid fa-file-code"></i> Export JSON</a>
+            <a href="#" id="exportCsvBtn"><i class="fa-solid fa-file-csv"></i> Export CSV</a>
+            <label for="importJsonInput" class="dropdown-item file-label">
+              <i class="fa-solid fa-file-import"></i> Import JSON
+              <input type="file" id="importJsonInput" accept=".json" style="display:none;" />
+            </label>
+            <div class="dropdown-divider"></div>
+            <a href="#" id="resetSeedBtn" class="danger-action"><i class="fa-solid fa-rotate-left"></i> Reset Demo Leads</a>
+          </div>
+        </div>
+        <button id="openAddLeadBtn" class="btn btn-primary shadow-glow">
+          <i class="fa-solid fa-plus"></i>
+          <span>Add New Lead</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- KPI / METRICS DASHBOARD -->
+    <section class="kpi-dashboard-section" aria-label="KPI Metrics Summary">
+      <div class="kpi-grid">
+        <!-- Metric 1: Total Leads -->
+        <div class="kpi-card card-total">
+          <div class="kpi-header">
+            <span class="kpi-label">TOTAL LEADS</span>
+            <div class="kpi-icon-pill"><i class="fa-solid fa-users"></i></div>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value" id="kpiTotalLeads">0</span>
+            <span class="kpi-trend positive"><i class="fa-solid fa-arrow-trend-up"></i> Active Pool</span>
+          </div>
+          <div class="kpi-footer-progress">
+            <div class="kpi-progress-bar" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <!-- Metric 2: Converted Leads -->
+        <div class="kpi-card card-converted">
+          <div class="kpi-header">
+            <span class="kpi-label">CONVERTED LEADS</span>
+            <div class="kpi-icon-pill"><i class="fa-solid fa-trophy"></i></div>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value" id="kpiConvertedLeads">0</span>
+            <span class="kpi-subtext" id="kpiConversionRate">0% Rate</span>
+          </div>
+          <div class="kpi-footer-progress">
+            <div class="kpi-progress-bar progress-converted" id="kpiConvertedBar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Metric 3: Pending Leads -->
+        <div class="kpi-card card-pending">
+          <div class="kpi-header">
+            <span class="kpi-label">PENDING IN PIPELINE</span>
+            <div class="kpi-icon-pill"><i class="fa-solid fa-clock-rotate-left"></i></div>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value" id="kpiPendingLeads">0</span>
+            <span class="kpi-subtext text-warning"><i class="fa-solid fa-hourglass-half"></i> In Progress</span>
+          </div>
+          <div class="kpi-footer-progress">
+            <div class="kpi-progress-bar progress-pending" id="kpiPendingBar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Metric 4: High Priority / Overdue Follow-ups -->
+        <div class="kpi-card card-urgent">
+          <div class="kpi-header">
+            <span class="kpi-label">URGENT FOLLOW-UPS</span>
+            <div class="kpi-icon-pill"><i class="fa-solid fa-bell"></i></div>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value" id="kpiUrgentLeads">0</span>
+            <span class="kpi-subtext text-danger" id="kpiUrgentSubtext">0 Overdue</span>
+          </div>
+          <div class="kpi-footer-progress">
+            <div class="kpi-progress-bar progress-urgent" id="kpiUrgentBar" style="width: 0%;"></div>
+          </div>
+        </div>
+
+        <!-- Metric 5: Average AI Lead Score -->
+        <div class="kpi-card card-ai-score">
+          <div class="kpi-header">
+            <span class="kpi-label">AVG AI LEAD SCORE</span>
+            <div class="kpi-icon-pill"><i class="fa-solid fa-microchip"></i></div>
+          </div>
+          <div class="kpi-body">
+            <span class="kpi-value" id="kpiAvgScore">0<small>/100</small></span>
+            <span class="kpi-subtext text-accent"><i class="fa-solid fa-sparkles"></i> AI Health</span>
+          </div>
+          <div class="kpi-footer-progress">
+            <div class="kpi-progress-bar progress-ai" id="kpiScoreBar" style="width: 0%;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTROL BAR: FILTERS, VIEW TOGGLES, BATCH ACTIONS -->
+    <section class="controls-section">
+      <div class="controls-left">
+        <!-- Filter: Lead Status -->
+        <div class="filter-group">
+          <label for="filterStatus"><i class="fa-solid fa-layer-group"></i> Status:</label>
+          <select id="filterStatus" class="custom-select">
+            <option value="all">All Statuses</option>
+            <option value="new">New</option>
+            <option value="contacted">Contacted</option>
+            <option value="intrested">Interested</option>
+            <option value="followup">Follow-up</option>
+            <option value="converted">Converted</option>
+            <option value="not intersted">Not Interested</option>
+          </select>
+        </div>
+
+        <!-- Filter: Lead Source -->
+        <div class="filter-group">
+          <label for="filterSource"><i class="fa-solid fa-bullhorn"></i> Source:</label>
+          <select id="filterSource" class="custom-select">
+            <option value="all">All Sources</option>
+            <option value="website">Website</option>
+            <option value="google">Google</option>
+            <option value="social media">Social Media</option>
+            <option value="referral">Referral</option>
+            <option value="email">Email</option>
+            <option value="phone">Phone</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+
+        <!-- Filter: Assigned Employee -->
+        <div class="filter-group">
+          <label for="filterEmployee"><i class="fa-solid fa-user-tie"></i> Assigned To:</label>
+          <select id="filterEmployee" class="custom-select">
+            <option value="all">All Reps</option>
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+
+        <!-- Filter: Priority -->
+        <div class="filter-group">
+          <label for="filterPriority"><i class="fa-solid fa-flag"></i> Priority:</label>
+          <select id="filterPriority" class="custom-select">
+            <option value="all">All Priorities</option>
+            <option value="high">High Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="low">Low Priority</option>
+          </select>
+        </div>
+
+        <!-- Reset Filters Button -->
+        <button id="resetFiltersBtn" class="btn btn-ghost" title="Reset all active filters" style="display:none;">
+          <i class="fa-solid fa-filter-circle-xmark"></i> Clear Filters
+        </button>
+      </div>
+
+      <div class="controls-right">
+        <!-- View Switcher (Kanban Pipeline vs Table View) -->
+        <div class="view-toggle-group">
+          <button id="viewKanbanBtn" class="btn-toggle active" title="Kanban Pipeline View">
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Pipeline</span>
+          </button>
+          <button id="viewTableBtn" class="btn-toggle" title="Data Table View">
+            <i class="fa-solid fa-table-list"></i>
+            <span>Table</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACTIVE FILTER BADGES BAR (Appears when filters applied) -->
+    <div id="activeFilterTags" class="active-filter-tags-bar" style="display:none;">
+      <span class="tags-label"><i class="fa-solid fa-filter"></i> Active Filters:</span>
+      <div id="tagsContainer" class="tags-container"></div>
+      <button id="clearAllTagsBtn" class="clear-tags-btn">Clear All</button>
+    </div>
+
+    <!-- MAIN CONTENT AREA: KANBAN & TABLE -->
+    <main class="main-content">
+      
+      <!-- VIEW 1: KANBAN PIPELINE BOARD -->
+      <div id="kanbanView" class="kanban-view-container active-view">
+        <div class="kanban-board" id="kanbanBoard">
+          <!-- Columns will be rendered dynamically for: new, contacted, intrested, followup, converted, not intersted -->
+        </div>
+      </div>
+
+      <!-- VIEW 2: DATA TABLE VIEW -->
+      <div id="tableView" class="table-view-container" style="display:none;">
+        <div class="table-card">
+          <div class="table-responsive">
+            <table class="leads-table" id="leadsTable">
+              <thead>
+                <tr>
+                  <th class="sortable" data-sort="name">Lead / Customer <i class="fa-solid fa-sort"></i></th>
+                  <th class="sortable" data-sort="company">Company <i class="fa-solid fa-sort"></i></th>
+                  <th>Contact Info</th>
+                  <th class="sortable" data-sort="source">Source <i class="fa-solid fa-sort"></i></th>
+                  <th class="sortable" data-sort="assigned">Assigned Rep <i class="fa-solid fa-sort"></i></th>
+                  <th class="sortable" data-sort="status">Status <i class="fa-solid fa-sort"></i></th>
+                  <th class="sortable" data-sort="priority">Priority <i class="fa-solid fa-sort"></i></th>
+                  <th class="sortable" data-sort="followup">Follow-up Date <i class="fa-solid fa-sort"></i></th>
+                  <th class="sortable" data-sort="aiScore">AI Score <i class="fa-solid fa-sort"></i></th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="leadsTableBody">
+                <!-- Rows injected dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Empty State for Table -->
+          <div id="emptyTableState" class="empty-state" style="display:none;">
+            <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
+            <h3>No Leads Match Your Filters</h3>
+            <p>Try searching for a different keyword or resetting your filter criteria.</p>
+            <button id="emptyResetFilterBtn" class="btn btn-secondary mt-3"><i class="fa-solid fa-rotate-left"></i> Reset Filters</button>
+          </div>
+
+          <!-- Table Footer Pagination / Count -->
+          <div class="table-footer">
+            <span id="tableCountDisplay" class="table-count-text">Showing 0 of 0 leads</span>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="app-footer">
+      <div class="footer-left">
+        <span>ApexLead AI Manager &bull; Built for High-Velocity Sales Teams</span>
+      </div>
+      <div class="footer-right">
+        <span class="storage-status"><i class="fa-solid fa-circle-check text-success"></i> LocalStorage Connected</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- MODAL 1: ADD / EDIT LEAD MODAL -->
+  <div class="modal-overlay" id="leadModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge" id="modalIconBadge"><i class="fa-solid fa-user-plus"></i></div>
+          <div>
+            <h2 id="modalTitle" class="modal-title">Add New Lead</h2>
+            <p class="modal-subtitle">Fill in customer information and sales metadata below.</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeModalBtn" aria-label="Close modal">&times;</button>
+      </div>
+
+      <form id="leadForm" novalidate>
+        <input type="hidden" id="leadId" />
+        <div class="modal-body">
+          
+          <div class="form-grid">
+            
+            <!-- Customer Name (Mandatory) -->
+            <div class="form-group">
+              <label for="customerName" class="required-label">Customer Name</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-user input-icon"></i>
+                <input type="text" id="customerName" class="form-control" placeholder="e.g. Sarah Jenkins" required />
+              </div>
+              <div class="error-feedback" id="err-customerName">Please enter customer name (min 2 characters).</div>
+            </div>
+
+            <!-- Company Name (Mandatory) -->
+            <div class="form-group">
+              <label for="companyName" class="required-label">Company Name</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-building input-icon"></i>
+                <input type="text" id="companyName" class="form-control" placeholder="e.g. Acme Corp / Stripe" required />
+              </div>
+              <div class="error-feedback" id="err-companyName">Please enter company name.</div>
+            </div>
+
+            <!-- Email (Mandatory, Validated) -->
+            <div class="form-group">
+              <label for="customerEmail" class="required-label">Email Address</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-envelope input-icon"></i>
+                <input type="email" id="customerEmail" class="form-control" placeholder="e.g. sarah@acme.com" required />
+              </div>
+              <div class="error-feedback" id="err-customerEmail">Please enter a valid email address.</div>
+            </div>
+
+            <!-- Phone (Mandatory, Validated) -->
+            <div class="form-group">
+              <label for="customerPhone" class="required-label">Phone Number</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-phone input-icon"></i>
+                <input type="tel" id="customerPhone" class="form-control" placeholder="e.g. +1 (555) 234-5678" required />
+              </div>
+              <div class="error-feedback" id="err-customerPhone">Please enter a valid phone number (min 7 digits).</div>
+            </div>
+
+            <!-- Lead Source (Mandatory Selection) -->
+            <div class="form-group">
+              <label for="leadSource" class="required-label">Lead Source</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-bullhorn input-icon"></i>
+                <select id="leadSource" class="form-control" required>
+                  <option value="" disabled selected>Select lead source...</option>
+                  <option value="website">Website</option>
+                  <option value="google">Google</option>
+                  <option value="social media">Social Media</option>
+                  <option value="referral">Referral</option>
+                  <option value="email">Email</option>
+                  <option value="phone">Phone</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="error-feedback" id="err-leadSource">Please select a lead source.</div>
+            </div>
+
+            <!-- Assigned Employee (Mandatory) -->
+            <div class="form-group">
+              <label for="assignedEmployee" class="required-label">Assigned Employee</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-user-tie input-icon"></i>
+                <input type="text" id="assignedEmployee" class="form-control" list="employeeSuggestions" placeholder="e.g. Alex Rivera, Jordan Lee" required />
+                <datalist id="employeeSuggestions">
+                  <option value="Alex Rivera"></option>
+                  <option value="Jordan Lee"></option>
+                  <option value="Taylor Swift"></option>
+                  <option value="Marcus Vance"></option>
+                  <option value="Elena Rostova"></option>
+                </datalist>
+              </div>
+              <div class="error-feedback" id="err-assignedEmployee">Please assign an employee/sales rep.</div>
+            </div>
+
+            <!-- Lead Status (Mandatory Selection) -->
+            <div class="form-group">
+              <label for="leadStatus" class="required-label">Lead Status</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-bars-progress input-icon"></i>
+                <select id="leadStatus" class="form-control" required>
+                  <option value="" disabled selected>Select status stage...</option>
+                  <option value="new">New</option>
+                  <option value="contacted">Contacted</option>
+                  <option value="intrested">Interested</option>
+                  <option value="followup">Follow-up</option>
+                  <option value="converted">Converted</option>
+                  <option value="not intersted">Not Interested</option>
+                </select>
+              </div>
+              <div class="error-feedback" id="err-leadStatus">Please select lead status.</div>
+            </div>
+
+            <!-- Priority (Mandatory Selection) -->
+            <div class="form-group">
+              <label for="leadPriority" class="required-label">Priority</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-flag input-icon"></i>
+                <select id="leadPriority" class="form-control" required>
+                  <option value="" disabled selected>Select priority...</option>
+                  <option value="low">Low (🟢 Routine)</option>
+                  <option value="medium">Medium (🟡 Important)</option>
+                  <option value="high">High (🔴 Urgent / Hot Deal)</option>
+                </select>
+              </div>
+              <div class="error-feedback" id="err-leadPriority">Please choose a priority level.</div>
+            </div>
+
+            <!-- Follow-up Date (Mandatory) -->
+            <div class="form-group">
+              <label for="followUpDate" class="required-label">Follow-up Date</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-calendar-day input-icon"></i>
+                <input type="date" id="followUpDate" class="form-control" required />
+              </div>
+              <div class="error-feedback" id="err-followUpDate">Please set a follow-up date.</div>
+            </div>
+
+            <!-- Estimated Deal Value (Optional / Bonus) -->
+            <div class="form-group">
+              <label for="dealValue">Estimated Deal Value ($)</label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-dollar-sign input-icon"></i>
+                <input type="number" id="dealValue" class="form-control" placeholder="e.g. 15000" min="0" step="100" />
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Notes Field (Mandatory) -->
+          <div class="form-group mt-3">
+            <div class="notes-header-flex">
+              <label for="leadNotes" class="required-label">Lead Notes & Conversation History</label>
+              <button type="button" id="aiGenerateNotesBtn" class="btn-micro-ai" title="AI summarize or enhance notes">
+                <i class="fa-solid fa-sparkles"></i> AI Enhance Note
+              </button>
+            </div>
+            <textarea id="leadNotes" class="form-control text-area" rows="3" placeholder="Key meeting points, customer requirements, pain points, budget, next steps..." required></textarea>
+            <div class="error-feedback" id="err-leadNotes">Please provide at least a brief note on this lead.</div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="cancelModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveLeadBtn">
+            <i class="fa-solid fa-floppy-disk"></i>
+            <span>Save Lead</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL 2: VIEW LEAD DETAILS & AI COPILOT DRAWER -->
+  <div class="modal-overlay" id="viewDetailsModal" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="view-avatar-badge" id="viewAvatar">JD</div>
+          <div>
+            <div class="title-with-tags">
+              <h2 id="viewCustomerName" class="modal-title">Customer Details</h2>
+              <span id="viewStatusBadge" class="status-badge status-new">New</span>
+              <span id="viewPriorityBadge" class="priority-badge priority-high"><i class="fa-solid fa-flag"></i> High</span>
+            </div>
+            <p id="viewCompanyName" class="modal-subtitle text-company"><i class="fa-solid fa-building"></i> Acme Corporation</p>
+          </div>
+        </div>
+        <div class="header-action-group">
+          <button class="btn btn-secondary btn-sm" id="viewEditBtn"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
+          <button class="btn btn-danger btn-sm" id="viewDeleteBtn"><i class="fa-solid fa-trash"></i> Delete</button>
+          <button class="modal-close-btn" id="closeViewModalBtn">&times;</button>
+        </div>
+      </div>
+
+      <div class="modal-body view-details-grid">
+        <!-- Left Side: Lead Profile & Timeline -->
+        <div class="details-main-col">
+          
+          <!-- Key info cards -->
+          <div class="info-tiles-grid">
+            <div class="info-tile">
+              <div class="tile-icon"><i class="fa-solid fa-envelope"></i></div>
+              <div class="tile-content">
+                <span class="tile-label">Email</span>
+                <a href="#" id="viewEmailLink" class="tile-value link-text">email@company.com</a>
+              </div>
+            </div>
+
+            <div class="info-tile">
+              <div class="tile-icon"><i class="fa-solid fa-phone"></i></div>
+              <div class="tile-content">
+                <span class="tile-label">Phone</span>
+                <a href="#" id="viewPhoneLink" class="tile-value link-text">+1 555-0192</a>
+              </div>
+            </div>
+
+            <div class="info-tile">
+              <div class="tile-icon"><i class="fa-solid fa-bullhorn"></i></div>
+              <div class="tile-content">
+                <span class="tile-label">Lead Source</span>
+                <span id="viewSourceText" class="tile-value source-text">Website</span>
+              </div>
+            </div>
+
+            <div class="info-tile">
+              <div class="tile-icon"><i class="fa-solid fa-user-tie"></i></div>
+              <div class="tile-content">
+                <span class="tile-label">Assigned Rep</span>
+                <span id="viewEmployeeText" class="tile-value">Alex Rivera</span>
+              </div>
+            </div>
+
+            <div class="info-tile">
+              <div class="tile-icon"><i class="fa-solid fa-calendar-check"></i></div>
+              <div class="tile-content">
+                <span class="tile-label">Follow-up Date</span>
+                <span id="viewFollowUpText" class="tile-value">Oct 24, 2026</span>
+              </div>
+            </div>
+
+            <div class="info-tile">
+              <div class="tile-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+              <div class="tile-content">
+                <span class="tile-label">Deal Value</span>
+                <span id="viewDealValueText" class="tile-value text-accent font-bold">$12,000</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Stage Progress Bar in View Modal -->
+          <div class="pipeline-quick-stepper">
+            <span class="stepper-title"><i class="fa-solid fa-arrows-split-up-and-left"></i> Move Pipeline Stage:</span>
+            <div class="stage-pills-row" id="viewStagePills">
+              <!-- Dynamically populated clickable stages -->
+            </div>
+          </div>
+
+          <!-- Notes & Activity Timeline -->
+          <div class="activity-timeline-section">
+            <div class="section-heading-row">
+              <h3><i class="fa-solid fa-clock-rotate-left"></i> Notes & Activity Log</h3>
+            </div>
+
+            <!-- Add new note inline -->
+            <div class="add-note-box">
+              <textarea id="quickNewNoteInput" placeholder="Add interaction note or meeting outcome..." rows="2"></textarea>
+              <div class="note-box-actions">
+                <button id="addQuickNoteBtn" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Note</button>
+              </div>
+            </div>
+
+            <!-- Notes List -->
+            <div class="timeline-feed" id="viewNotesTimeline">
+              <!-- Injected notes -->
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Side: Lead AI Co-Pilot & Insights -->
+        <div class="details-ai-col">
+          <div class="ai-box-card">
+            <div class="ai-box-header">
+              <div class="ai-header-title">
+                <i class="fa-solid fa-sparkles text-ai"></i>
+                <h4>Lead AI Intelligence</h4>
+              </div>
+              <span class="ai-chip">Live Analysis</span>
+            </div>
+
+            <!-- Score gauge -->
+            <div class="ai-score-card">
+              <div class="score-circle-wrap">
+                <svg class="score-svg" viewBox="0 0 36 36">
+                  <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path class="circle-fill" id="aiScoreCircleFill" stroke-dasharray="85, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="score-center-text">
+                  <span id="aiScoreNumber">85</span>
+                  <small>Score</small>
+                </div>
+              </div>
+              <div class="score-desc">
+                <h5 id="aiScoreVerdict">High Conversion Potential</h5>
+                <p id="aiScoreReason">High urgency, active follow-up schedule, and strong source alignment.</p>
+              </div>
+            </div>
+
+            <!-- AI Next Best Action -->
+            <div class="ai-recommendation-card">
+              <div class="rec-header"><i class="fa-solid fa-lightbulb text-warning"></i> AI Next Best Action:</div>
+              <p id="aiNextActionText" class="rec-text">Schedule a 15-minute discovery call focusing on ROI and onboarding speed.</p>
+            </div>
+
+            <!-- AI Email Pitch Drafter -->
+            <div class="ai-pitch-generator">
+              <div class="pitch-header">
+                <h5><i class="fa-solid fa-paper-plane"></i> AI One-Click Outreach Drafter</h5>
+                <button id="aiRegenerateEmailBtn" class="btn-ghost-sm" title="Regenerate draft"><i class="fa-solid fa-rotate"></i></button>
+              </div>
+              <div class="pitch-box">
+                <div class="pitch-subject-line"><strong>Subject:</strong> <span id="aiEmailSubject">Quick question regarding your growth goals at Acme</span></div>
+                <div class="pitch-body" id="aiEmailBody">
+                  Hi Sarah,<br><br>
+                  I noticed your inquiry from our Website. Given Acme Corp's focus on scaling, I'd love to share how teams like yours streamline workflows and double conversion rates.
+                </div>
+              </div>
+              <div class="pitch-actions">
+                <button id="copyAiEmailBtn" class="btn btn-secondary btn-sm"><i class="fa-solid fa-copy"></i> Copy Email Draft</button>
+                <button id="sendDirectEmailBtn" class="btn btn-accent btn-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open in Mail Client</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL 3: DELETE CONFIRMATION -->
+  <div class="modal-overlay" id="deleteConfirmModal" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge danger"><i class="fa-solid fa-triangle-exclamation"></i></div>
+          <h3 class="modal-title">Delete Lead?</h3>
+        </div>
+        <button class="modal-close-btn" id="closeDeleteModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete lead for <strong id="deleteLeadName">Customer</strong>? This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="cancelDeleteBtn">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn"><i class="fa-solid fa-trash"></i> Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 4: AI COPILOT OVERVIEW MODAL -->
+  <div class="modal-overlay" id="aiOverviewModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge ai-badge-glow"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+          <div>
+            <h2 class="modal-title">ApexLead AI Pipeline Intelligence</h2>
+            <p class="modal-subtitle">Real-time heuristics, win probabilities, and pipeline health diagnostics.</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeAiOverviewBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="ai-overview-grid" id="aiOverviewContent">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="closeAiOverviewFooterBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>
