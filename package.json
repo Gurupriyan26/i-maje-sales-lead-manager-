@@ -1,0 +1,20 @@
+{
+  "name": "sales-lead-manager",
+  "version": "1.0.0",
+  "description": "Enterprise Sales Lead Manager with AI, Kanban, and Table views",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx -y serve .",
+    "start": "npx -y serve .",
+    "build": "echo 'Client-side zero-build static app ready!'"
+  },
+  "keywords": [
+    "crm",
+    "sales-leads",
+    "pipeline",
+    "kanban",
+    "lead-ai"
+  ],
+  "author": "Gurupriyan",
+  "license": "MIT"
+}
