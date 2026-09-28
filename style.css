@@ -1009,6 +1009,7 @@ html, body {
   margin-bottom: 10px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   font-style: italic;
@@ -2548,7 +2549,6 @@ html, body {
 }
 
 .clickable-kpi.active-kpi-filter {
-  ring: 2px solid var(--primary);
   box-shadow: 0 0 0 2px var(--primary), var(--shadow-md) !important;
 }
 
