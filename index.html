@@ -95,6 +95,10 @@
             <a href="#" id="resetSeedBtn" class="danger-action"><i class="fa-solid fa-rotate-left"></i> Reset Demo Leads</a>
           </div>
         </div>
+        <button id="openCommissionCalcBtn" class="btn btn-secondary btn-icon-text" title="Commission Calculator (Section D)">
+          <i class="fa-solid fa-calculator"></i>
+          <span>Commission Calc</span>
+        </button>
         <button id="openAddLeadBtn" class="btn btn-primary shadow-glow">
           <i class="fa-solid fa-plus"></i>
           <span>Add New Lead</span>
@@ -760,6 +764,65 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" id="closeAiOverviewFooterBtn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 5: COMMISSION CALCULATOR MODAL (Section D) -->
+  <div class="modal-overlay" id="commissionCalcModal" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <div class="modal-icon-badge"><i class="fa-solid fa-calculator text-primary"></i></div>
+          <div>
+            <h2 class="modal-title">Sales Commission Calculator</h2>
+            <p class="modal-subtitle">Calculate rep earnings and total deal payout with verified math.</p>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="closeCommissionCalcBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="commissionForm" onsubmit="return false;" class="lead-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="calcSalesInput" class="form-label">Sales Amount ($) <span class="required">*</span></label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-dollar-sign input-icon"></i>
+                <input type="number" id="sales" class="form-input" placeholder="e.g. 800000" min="0" step="any" value="800000" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="calcPercentageInput" class="form-label">Commission Rate (%) <span class="required">*</span></label>
+              <div class="input-with-icon">
+                <i class="fa-solid fa-percent input-icon"></i>
+                <input type="number" id="percentage" class="form-input" placeholder="e.g. 7" min="0" max="100" step="any" value="7" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Presets -->
+          <div class="calc-presets-row" style="margin-bottom: 16px;">
+            <span style="font-size: 0.78rem; color: var(--text-dim); margin-right: 8px;">Presets:</span>
+            <button type="button" class="btn btn-xs btn-ghost calc-preset-btn" data-sales="800000" data-pct="7">800K @ 7% (Interview Spec)</button>
+            <button type="button" class="btn btn-xs btn-ghost calc-preset-btn" data-sales="150000" data-pct="10">150K @ 10%</button>
+            <button type="button" class="btn btn-xs btn-ghost calc-preset-btn" data-sales="50000" data-pct="5">50K @ 5%</button>
+          </div>
+
+          <!-- Result Card -->
+          <div class="calc-result-box" id="calcResultBox" style="background: var(--bg-surface-elevated); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 16px; margin-bottom: 12px;">
+            <div style="font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 8px;">Calculation Breakdown</div>
+            <div id="result" style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">
+              Commission: $56,000.00 | Total: $856,000.00
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-dim); line-height: 1.4;">
+              Formula: <code>Commission = (Sales &times; Rate) / 100</code> | <code>Total = Sales + Commission</code>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="resetCalcBtn"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+        <button type="button" class="btn btn-primary" id="runCalcBtn"><i class="fa-solid fa-bolt"></i> Calculate</button>
       </div>
     </div>
   </div>

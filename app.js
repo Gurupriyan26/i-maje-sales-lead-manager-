@@ -532,6 +532,47 @@ function initEventListeners() {
   document.getElementById('cancelDeleteBtn').addEventListener('click', closeAllModals);
   document.getElementById('confirmDeleteBtn').addEventListener('click', handleConfirmDelete);
 
+  // Commission Calculator Modal (Section D)
+  const openCommissionCalcBtn = document.getElementById('openCommissionCalcBtn');
+  const closeCommissionCalcBtn = document.getElementById('closeCommissionCalcBtn');
+  const runCalcBtn = document.getElementById('runCalcBtn');
+  const resetCalcBtn = document.getElementById('resetCalcBtn');
+  const salesInput = document.getElementById('sales');
+  const percentageInput = document.getElementById('percentage');
+
+  if (openCommissionCalcBtn) {
+    openCommissionCalcBtn.addEventListener('click', () => {
+      closeAllModals();
+      document.getElementById('commissionCalcModal')?.classList.add('active');
+      calculateCommission();
+    });
+  }
+  if (closeCommissionCalcBtn) {
+    closeCommissionCalcBtn.addEventListener('click', closeAllModals);
+  }
+  if (runCalcBtn) {
+    runCalcBtn.addEventListener('click', calculateCommission);
+  }
+  if (resetCalcBtn) {
+    resetCalcBtn.addEventListener('click', () => {
+      if (salesInput) salesInput.value = '800000';
+      if (percentageInput) percentageInput.value = '7';
+      calculateCommission();
+    });
+  }
+  if (salesInput) salesInput.addEventListener('input', calculateCommission);
+  if (percentageInput) percentageInput.addEventListener('input', calculateCommission);
+
+  document.querySelectorAll('.calc-preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const s = btn.getAttribute('data-sales');
+      const p = btn.getAttribute('data-pct');
+      if (salesInput) salesInput.value = s;
+      if (percentageInput) percentageInput.value = p;
+      calculateCommission();
+    });
+  });
+
   // Table Sorting Header Listeners
   document.querySelectorAll('.leads-table th.sortable').forEach(th => {
     th.addEventListener('click', () => {
@@ -2003,3 +2044,27 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+// ==========================================
+// 14. SALES COMMISSION CALCULATOR (Section D)
+// ==========================================
+function calculateCommission() {
+  const salesEl = document.getElementById('sales');
+  const percentageEl = document.getElementById('percentage');
+  const resultEl = document.getElementById('result');
+
+  if (!salesEl || !percentageEl || !resultEl) return;
+
+  const sales = parseFloat(salesEl.value) || 0;
+  const percentage = parseFloat(percentageEl.value) || 0;
+
+  // Formula: Commission = (Sales * Percentage) / 100
+  const commissionAmount = (sales * percentage) / 100;
+  const total = sales + commissionAmount;
+
+  resultEl.innerHTML = `Commission: <strong style="color:var(--success);">$${commissionAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> | Total: <strong style="color:var(--primary);">$${total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>`;
+}
+
+// Global debug hook
+window.commission = calculateCommission;
+
